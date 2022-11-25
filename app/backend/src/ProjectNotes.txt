@@ -1,0 +1,5 @@
+POROJETO TFC
+
+TYPESCRIPT - Tipagem, classes, métodos, atributos
+SEQUELIZE - criação de seeders, migrations, interfaces(?) - olhar course (parte de intro a TS - dia 02)
+TESTES UNITÁRIOS - TDD
