@@ -1,7 +1,7 @@
 // import * as jwt from 'jsonwebtoken';
 // import Model from 'sequelize';
 import * as bcrypt from 'bcryptjs';
-import { badRequest, okRequest, unauthorized } from '../helpers/http';
+import { badRequest, unauthorized } from '../helpers/http';
 import jwtUtils from '../utils/jwt.utils';
 import { ReqLog } from '../interfaces';
 import User from '../database/models/Users';
@@ -26,6 +26,6 @@ export default class loginService {
       return badRequest('invalid password');
     }
     const token = await jwtUtils.token(userData.email);
-    return okRequest({ token });
+    return ({ type: null, message: token });
   };
 }
