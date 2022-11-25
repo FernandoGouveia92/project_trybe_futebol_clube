@@ -17,7 +17,7 @@ const validation = async (req: Request, res: Response, next: NextFunction) => {
     password: Joi.string().required(),
   });
   const { error } = schema.validate(req.body);
-  if (error) return res.status(400).json({ message: error.details[0].message });
+  if (error) return res.status(400).json({ message: 'All fields must be filled' });
   next();
 };
 

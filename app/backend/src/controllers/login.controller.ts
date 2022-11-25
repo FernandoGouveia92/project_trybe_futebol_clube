@@ -6,7 +6,10 @@ export default class LoginController {
   constructor(private loginService = new LoginService()) { }
 
   public login = async (req: Request, res: Response) => {
-    const { message } = await this.loginService.login(req.body);
-    res.status(200).json({ token: message });
+    const { type, message } = await this.loginService.login(req.body);
+    if (type !== 200) {
+      return res.status(type).json({ message });
+    }
+    res.status(type).json({ token: message });
   };
 }

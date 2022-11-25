@@ -1,5 +1,3 @@
-// import * as jwt from 'jsonwebtoken';
-// import Model from 'sequelize';
 import * as bcrypt from 'bcryptjs';
 import { badRequest, unauthorized } from '../helpers/http';
 import jwtUtils from '../utils/jwt.utils';
@@ -16,16 +14,15 @@ export default class loginService {
   login = async (params: ReqLog) => {
     // resolver tipo de params com interface
     const { email, password } = params;
-    console.log(email, password);
     const userData = await User.findOne({ where: { email } });
     if (!userData) {
       return unauthorized('Incorrect email or password');
     }
-    const decrypt = bcrypt.compare(password, userData.password);
+    const decrypt = await bcrypt.compare(password, userData?.dataValues.password);
     if (!decrypt) {
-      return badRequest('invalid password');
+      return badRequest('Incorrect email or password');
     }
     const token = await jwtUtils.token(userData.email);
-    return ({ type: null, message: token });
+    return ({ type: 200, message: token });
   };
 }

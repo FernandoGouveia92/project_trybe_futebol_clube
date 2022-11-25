@@ -1,8 +1,6 @@
 export const badRequest = (info: string) => ({
-  type: 400,
-  message: {
-    message: info,
-  },
+  type: 401,
+  message: info,
 });
 
 export const unauthorized = (info: string) => ({
