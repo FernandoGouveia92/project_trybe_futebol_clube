@@ -1,15 +1,7 @@
 // import * as jwt from 'jsonwebtoken';
 import * as Joi from 'joi';
 import { NextFunction, Request, Response } from 'express';
-// import User from 'src/database/models/Users';
-// import Users from '../interfaces/user.interface';
-
-// const createToken = async (login: User) => {
-//   console.log('olha eu no auth midle');
-//   const token = jwt
-//     .sign({ login }, process.env.JWT_SECRET as string);
-//   return token;
-// };
+import jwtUtils from '../utils/jwt.utils';
 
 const validation = async (req: Request, res: Response, next: NextFunction) => {
   const schema = Joi.object({
@@ -21,7 +13,20 @@ const validation = async (req: Request, res: Response, next: NextFunction) => {
   next();
 };
 
+const validToken = async (req: Request, res: Response, next: NextFunction) => {
+  const { authorization } = req.headers;
+  if (!authorization) {
+    return res.status(401).json({ message: 'Token not found' });
+  }
+  const user = await jwtUtils.decodeToken(authorization);
+  if (user.type) {
+    return res.status(401).json({ message: user.message });
+  }
+  req.body.user = user;
+  next();
+};
+
 export default {
-  // createToken,
+  validToken,
   validation,
 };

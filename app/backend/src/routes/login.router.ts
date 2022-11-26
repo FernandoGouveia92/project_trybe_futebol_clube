@@ -7,5 +7,6 @@ const loginRouter = Router();
 const loginController = new LoginController();
 
 loginRouter.post('/', authMiddleware.validation, loginController.login);
+loginRouter.get('/validate', authMiddleware.validToken, loginController.validatedLogind);
 
 export default loginRouter;

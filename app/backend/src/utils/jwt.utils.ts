@@ -11,4 +11,13 @@ export default class jwtUtils {
     });
     return token;
   }
+
+  static async decodeToken(token: string) {
+    try {
+      const data = jwt.verify(token, process.env.JWT_SECRET as string);
+      return { type: null, data };
+    } catch (_err) {
+      return { type: 401, message: 'Expired or invalid token' };
+    }
+  }
 }
