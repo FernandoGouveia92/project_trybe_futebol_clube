@@ -4,7 +4,7 @@ import jwtUtils from '../utils/jwt.utils';
 import { ReqLog } from '../interfaces';
 import User from '../database/models/Users';
 
-export default class loginService {
+export default class LoginService {
   private userModel: User;
 
   constructor() {

@@ -1,6 +1,5 @@
 import { Request, Response } from 'express';
 import User from '../database/models/Users';
-// import { ResLog } from '../helpers/http';
 import LoginService from '../services/login.service';
 
 export default class LoginController {
@@ -17,7 +16,6 @@ export default class LoginController {
   public validatedLogind = async (req: Request, res: Response) => {
     const { email } = req.body;
     const userRole = await User.findOne({ where: { email } });
-    // console.log(userRole?.dataValues);
     return res.status(200).json(userRole?.dataValues.role);
   };
 }
