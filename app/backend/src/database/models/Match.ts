@@ -1,5 +1,5 @@
 import { INTEGER, Model, BOOLEAN } from 'sequelize';
-// import Team from './Teams';
+import Teams from './Teams';
 import db from '.';
 
 class Match extends Model {
@@ -20,6 +20,10 @@ Match.init({
   homeTeam: {
     type: INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'id',
+    },
   },
   homeTeamGoals: {
     type: INTEGER,
@@ -28,6 +32,10 @@ Match.init({
   awayTeam: {
     type: INTEGER,
     allowNull: false,
+    references: {
+      model: 'teams',
+      key: 'id',
+    },
   },
   awayTeamGoals: {
     type: INTEGER,
@@ -40,7 +48,7 @@ Match.init({
 }, {
   underscored: true,
   sequelize: db,
-  tableName: 'matches',
+  modelName: 'matches',
   timestamps: false,
 });
 
@@ -51,5 +59,11 @@ Match.init({
 
 // Example.hasMany(OtherModel, { foreignKey: 'campoC', as: 'campoEstrangeiroC' });
 // Example.hasMany(OtherModel, { foreignKey: 'campoD', as: 'campoEstrangeiroD' });
+
+Match.belongsTo(Teams, { foreignKey: 'homeTeam', as: 'teamHome' });
+Match.belongsTo(Teams, { foreignKey: 'awayTeam', as: 'teamAway' });
+
+Teams.hasMany(Match, { foreignKey: 'homeTeam', as: 'teamHome' });
+Teams.hasMany(Match, { foreignKey: 'awayTeam', as: 'teamAway' });
 
 export default Match;

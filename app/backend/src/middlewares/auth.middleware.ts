@@ -20,7 +20,7 @@ const validToken = async (req: Request, res: Response, next: NextFunction) => {
   }
   const user = await jwtUtils.decodeToken(authorization);
   if (user.type) {
-    return res.status(401).json({ message: user.message });
+    return res.status(401).json({ message: 'Token must be a valid token' });
   }
   req.body.user = user;
   next();

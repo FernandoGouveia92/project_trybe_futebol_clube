@@ -14,11 +14,11 @@ export default class LoginService {
   login = async (params: ReqLog) => {
     // resolver tipo de params com interface
     const { email, password } = params;
-    const userData = await User.findOne({ where: { email } });
+    const userData = await User.findOne({ where: { email }, raw: true });
     if (!userData) {
       return unauthorized('Incorrect email or password');
     }
-    const decrypt = await bcrypt.compare(password, userData?.dataValues.password);
+    const decrypt = await bcrypt.compare(password, userData?.password);
     if (!decrypt) {
       return badRequest('Incorrect email or password');
     }

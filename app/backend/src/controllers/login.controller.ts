@@ -13,7 +13,7 @@ export default class LoginController {
     res.status(type).json({ token: message });
   };
 
-  public validatedLogind = async (req: Request, res: Response) => {
+  public validatedLogin = async (req: Request, res: Response) => {
     const { email } = req.body;
     const userRole = await User.findOne({ where: { email } });
     return res.status(200).json(userRole?.dataValues.role);
