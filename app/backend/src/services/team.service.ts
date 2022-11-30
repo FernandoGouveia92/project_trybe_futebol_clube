@@ -8,7 +8,7 @@ export default class TeamsService {
 
   getAll = async () => {
     const teams = await Teams.findAll();
-    return (teams);
+    return teams;
   };
 
   getById = async (id: string) => {

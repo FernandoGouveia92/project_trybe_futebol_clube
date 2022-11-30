@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import User from '../database/models/Users';
+import { JwtPayload } from 'jsonwebtoken';
 import LoginService from '../services/login.service';
 
 export default class LoginController {
@@ -14,8 +14,11 @@ export default class LoginController {
   };
 
   public validatedLogin = async (req: Request, res: Response) => {
-    const { email } = req.body;
-    const userRole = await User.findOne({ where: { email } });
-    return res.status(200).json(userRole?.dataValues.role);
+    const { authorization } = req.headers;
+    const data = await this.loginService.alreadyLoggedIn(authorization as string);
+    const result = data as JwtPayload;
+    // É necessário afirmar a tipagem de DATA com sendo Payload, para poder acessar os dados de DATA -> role.
+    // console.log('Olha eu no controller', result.role);
+    return res.status(200).json({ role: result.role });
   };
 }

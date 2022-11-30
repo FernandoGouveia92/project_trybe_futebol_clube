@@ -18,11 +18,11 @@ const validToken = async (req: Request, res: Response, next: NextFunction) => {
   if (!authorization) {
     return res.status(401).json({ message: 'Token not found' });
   }
+
   const user = await jwtUtils.decodeToken(authorization);
-  if (user.type) {
+  if (!user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
-  req.body.user = user;
   next();
 };
 

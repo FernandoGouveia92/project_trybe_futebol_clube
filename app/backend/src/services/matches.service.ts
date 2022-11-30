@@ -52,7 +52,7 @@ export default class MatchesService {
 
   updateMatch = async (id: number) => {
     await Match.update({
-      inProgress: true,
+      inProgress: false,
     }, { where: { id } });
   };
 
@@ -64,8 +64,10 @@ export default class MatchesService {
     );
   };
 
-  checkingId = async (id: number) => {
-    const idExists = await Match.findOne({ where: { id } });
-    return idExists;
+  checkingId = async (teamA: number, teamB: number) => {
+    const teamAExists = await Teams.findOne({ where: { homeTeam: teamA } });
+    const teamBExists = await Teams.findOne({ where: { awayTeam: teamB } });
+    const teamsIds = { aTeam: teamAExists, bTeam: teamBExists };
+    return teamsIds;
   };
 }
