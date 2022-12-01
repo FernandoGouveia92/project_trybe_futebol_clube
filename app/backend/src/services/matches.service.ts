@@ -64,10 +64,11 @@ export default class MatchesService {
     );
   };
 
-  checkingId = async (teamA: number, teamB: number) => {
-    const teamAExists = await Teams.findOne({ where: { teamName: teamA } });
-    const teamBExists = await Teams.findOne({ where: { teamName: teamB } });
-    const teamsIds = { aTeam: teamAExists, bTeam: teamBExists };
-    return teamsIds;
+  checkingId = async (team: number) => {
+    const teamsExists = await Teams.findByPk(team);
+    // const teamAExists = await Teams.findOne({ where: { teamName: teamA } });
+    // const teamBExists = await Teams.findOne({ where: { teamName: teamB } });
+    // const teamsIds = { aTeam: teamAExists, bTeam: teamBExists };
+    return teamsExists;
   };
 }

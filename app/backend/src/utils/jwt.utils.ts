@@ -17,10 +17,9 @@ export default class JwtUtils {
   static async decodeToken(token: string) {
     try {
       const data = jwt.verify(token, process.env.JWT_SECRET as string);
-      // console.log('Eu to no Utils do JWT', data);
       return data;
     } catch (_err) {
-      return { type: 401, message: 'Expired or invalid token' };
+      return null;
     }
   }
 }

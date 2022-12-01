@@ -22,20 +22,8 @@ export default class MatchesController {
   // REQ 23 e 25 feito aqui
 
   public addMatch = async (req: Request, res: Response) => {
-    const { homeTeam, awayTeam } = req.body;
-
-    const checkId = await this.matchesService.checkingId(Number(homeTeam), Number(awayTeam));
-    if (!checkId) {
-      return res.status(404).json({ message: 'There is no team with such id' });
-    }
-
-    if (req.body.awayTeam === req.body.homeTeam) {
-      return res.status(422)
-        .json({ message: 'It is not possible to create a match with two equal teams' });
-    }
-
     const newMatch = await this.matchesService.newMatch(req.body);
-
+    console.log('se tu ta me vendo, passou batido pelo validation de token do middle');
     return res.status(201).json(newMatch);
   };
 
@@ -43,11 +31,13 @@ export default class MatchesController {
 
   public updateMatch = async (req: Request, res: Response) => {
     const { id } = req.params;
+    // console.log('Eu to no updateMatch, req 24, no controller');
     await this.matchesService.updateMatch(Number(id));
     return res.status(200).json({ message: 'Finished' });
   };
 
   public alterMatch = async (req: Request, res: Response) => {
+    console.log('Eu to no alterMatch');
     const { id } = req.params;
     await this.matchesService.updateMatchWithId(Number(id), req.body);
     return res.status(200).json({ message: 'Match altered successfully' });
