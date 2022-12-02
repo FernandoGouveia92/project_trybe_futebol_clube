@@ -17,14 +17,12 @@ const validation = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const validToken = async (req: Request, res: Response, next: NextFunction) => {
-  // console.log('eu to no validToken, antes do authorization');
   const { authorization } = req.headers;
   if (!authorization) {
     return res.status(401).json({ message: 'Token not found' });
   }
   // console.log('eu estou depois do authorization e antes de fazer o decode token');
   const user = await jwtUtils.decodeToken(authorization);
-  console.log('Olha o que volta do decodeToken', user);
   if (!user) {
     return res.status(401).json({ message: 'Token must be a valid token' });
   }
