@@ -1,21 +1,5 @@
 // ESTRUTURA DO RETORNO ESPERADO
-
-// POSSSÍVEL INTERFACE:
-// leaderboard {
-//   name?: string,
-//   totalPoints: number,
-//   totalGames: number,
-//   totalVictories: number,
-//   totalDraws: number,
-//   totalLosses: number,
-//   goalsFavor: number,
-//   goalsOwn: number,
-//   goalsBalance: number,
-//   efficiency: number | string,
-// }
 /*
-/*
-
 A sua tabela deverá renderizar somente as PARTIDAS que já foram FINALIZADAS!
 
 vitoria = 3 pontos
@@ -83,9 +67,9 @@ Organizado de forma decrescente da quantidade de pontos
 
 import Match from '../database/models/Match';
 import Teams from '../database/models/Teams';
-import { leaderboard, ReqLog } from '../interfaces';
+import { leaderboard } from '../interfaces';
 
-export default class LeaderboardService {
+export default class AwayLeaderboardService {
   private matchModel: Match;
   private teamsModel: Teams;
   private result: leaderboard[];
@@ -95,47 +79,79 @@ export default class LeaderboardService {
     this.result = [];
   }
 
-  findGames = async () => {
-    // Detém todas as partidas finalizadas
+  filteredGamesAway = async (): Promise<leaderboard[]> => {
+    const result = await this.findGamesAway();
+    const filter = result.sort((a, b) => {
+      if (a.totalPoints < b.totalPoints) {
+        return 1;
+      } if (a.totalPoints > b.totalPoints) {
+        return -1;
+      }
+      return this.firstFilter(a, b);
+    });
+    return filter;
+  };
+
+  firstFilter = (a:leaderboard, b: leaderboard) => {
+    if (a.totalVictories < b.totalVictories) {
+      return 1;
+    } if (a.totalVictories > b.totalVictories) {
+      return -1;
+    }
+    return this.secondFilter(a, b);
+  };
+
+  secondFilter = (a: leaderboard, b: leaderboard) => {
+    if (a.goalsBalance < b.goalsBalance) {
+      return 1;
+    } if (a.goalsBalance > b.goalsBalance) {
+      return -1;
+    }
+    return this.thirdFilter(a, b);
+  };
+
+  thirdFilter = (a: leaderboard, b: leaderboard) => {
+    if (a.goalsFavor < b.goalsFavor) {
+      return 1;
+    } if (a.goalsFavor > b.goalsFavor) {
+      return -1;
+    }
+    return this.finalFilter(a, b);
+  };
+
+  finalFilter = (a: leaderboard, b: leaderboard) => {
+    if (a.goalsOwn < b.goalsOwn) {
+      return 1;
+    } if (a.goalsOwn > b.goalsOwn) {
+      return -1;
+    }
+    return 0;
+  };
+
+  findGamesAway = async () => {
     const finishedOnes = await Match.findAll({ where: { inProgress: false } });
-    // console.log(finishedOnes);
     const teams = await Teams.findAll();
     teams.forEach((team) => {
-      // Essa constante (homeGame.length) detém o valor para ---TOTALGAMES---
-      const homeGames = finishedOnes.filter((match) => match.homeTeam === team.id);
-      // console.log(homeGame)
-      // resto pode armazenar as regras de negócio - resto de resto dos dados que são necessários para retornar para o usuário
-      const data = this.totalPoints(homeGames);
+      const awayGames = finishedOnes.filter((match) => match.awayTeam === team.id);
+      const data = this.totalPoints(awayGames);
       const obj: leaderboard = { name: team.teamName, ...data };
       this.result.push(obj);
     });
+    const finalResult = this.result;
+    this.result = [];
+    return finalResult;
   };
 
-  totalPoints = (homeGames: Match[]): leaderboard => {
-    // console.log(finishedOnes);
-    let totalVictories = 0;
-    let totalDraws = 0;
-    let totalLosses = 0;
-    let goalsFavor = 0;
-    let goalsOwn = 0;
-    const totalGames = homeGames.length;
-    homeGames.forEach((game) => {
-      goalsFavor += game.homeTeamGoals;
-      goalsOwn += game.awayTeamGoals;
-      if (game.homeTeamGoals > game.awayTeamGoals) {
-        totalVictories += 1;
-      } else if (game.awayTeamGoals > game.homeTeamGoals) {
-        totalLosses += 1;
-      } else {
-        totalDraws += 1;
-      }
-    });
-    const goalsBalance = goalsFavor - goalsOwn;
+  totalPoints = (awayGames: Match[]): leaderboard => {
+    const { goalsFavor, goalsOwn, goalsBalance } = this.goalsManager(awayGames);
+    const { totalVictories, totalDraws, totalLosses } = this.matchesOutcomeManager(awayGames);
+    const totalGames = awayGames.length;
     const totalPoints = (totalVictories * 3) + totalDraws;
-    // [P / (J * 3)] * 100
-    const efficiency = (totalPoints / (totalGames * 3)) * 100;
+    const efficiency = ((totalPoints / (totalGames * 3)) * 100).toFixed(2);
+
     return {
       totalPoints,
+      efficiency,
       totalGames,
       totalVictories,
       totalDraws,
@@ -143,7 +159,43 @@ export default class LeaderboardService {
       goalsFavor,
       goalsOwn,
       goalsBalance,
-      efficiency,
+    };
+  };
+
+  goalsManager = (homeGames: Match[]) => {
+    let goalsFavor = 0;
+    let goalsOwn = 0;
+
+    homeGames.forEach((game) => {
+      goalsFavor += game.awayTeamGoals;
+      goalsOwn += game.homeTeamGoals;
+    });
+    const goalsBalance = goalsFavor - goalsOwn;
+    return {
+      goalsFavor,
+      goalsOwn,
+      goalsBalance,
+    };
+  };
+
+  matchesOutcomeManager = (awayGames: Match[]) => {
+    let totalVictories = 0;
+    let totalDraws = 0;
+    let totalLosses = 0;
+    awayGames.forEach((game) => {
+      if (game.awayTeamGoals > game.homeTeamGoals) {
+        totalVictories += 1;
+      } else if (game.homeTeamGoals > game.awayTeamGoals) {
+        totalLosses += 1;
+      } else {
+        totalDraws += 1;
+      }
+    });
+
+    return {
+      totalVictories,
+      totalDraws,
+      totalLosses,
     };
   };
 }
