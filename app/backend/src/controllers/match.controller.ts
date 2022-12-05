@@ -23,7 +23,7 @@ export default class MatchesController {
 
   public addMatch = async (req: Request, res: Response) => {
     const newMatch = await this.matchesService.newMatch(req.body);
-    console.log('se tu ta me vendo, passou batido pelo validation de token do middle');
+    // console.log('se tu ta me vendo, passou batido pelo validation de token do middle');
     return res.status(201).json(newMatch);
   };
 
@@ -37,7 +37,7 @@ export default class MatchesController {
   };
 
   public alterMatch = async (req: Request, res: Response) => {
-    console.log('Eu to no alterMatch');
+    // console.log('Eu to no alterMatch');
     const { id } = req.params;
     await this.matchesService.updateMatchWithId(Number(id), req.body);
     return res.status(200).json({ message: 'Match altered successfully' });
