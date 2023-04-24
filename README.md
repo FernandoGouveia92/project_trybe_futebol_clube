@@ -38,4 +38,4 @@ NodeJS, Express, Typescript, JWT
 
 #### BREVE DESCRIÇÃO
 
-Neste projeto, foram aplicados conhecimentos sobre NodeJS, Express, Arquitetura Software MSC e Typescript
+Neste projeto, foram aplicados conhecimentos sobre NodeJS, Express, Arquitetura Software MSC, Typescript e Docker
